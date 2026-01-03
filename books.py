@@ -3,14 +3,14 @@ from fastapi import FastAPI, Body
 app = FastAPI()
 
 BOOKS = [
-    {'title': 'Robinzone  Cruzo One',
+    {'title': 'RRR',
      'author': 'Author One',
      'category': 'science'},
     {'title': 'Title Two',
      'author': 'Author Two',
      'category': 'science'},
     {'title': 'Title Three',
-     'author': 'Author Three',
+     'author': 'Author One',
      'category': 'history'},
     {'title': 'Robinzone p2',
      'author': 'Author Four',
@@ -24,10 +24,10 @@ BOOKS = [
 ]
 
 
-@app.get("/books")
-async def read_all_books():
-    return BOOKS
-
+# @app.get("/books")
+# async def read_all_books():
+#     return BOOKS
+#
 
 # @app.get("/books/{id}")
 # async def read_book(id: int):
@@ -67,29 +67,58 @@ async def read_all_books():
 #             result_books.append(book)
 #
 #     return result_books
+#
+#
+# @app.get("/books/")
+# async def get_searched_book(s: str, limit: int):
+#     searched_books = []
+#     book_counter = 0
+#
+#     for book in BOOKS:
+#         if s.casefold() in book.get('title').casefold():
+#             searched_books.append(book)
+#             book_counter += 1
+#
+#             if book_counter == limit:
+#                 break
+#
+#     return searched_books
+#
+# @app.post("/books/create_book")
+# async def create_book(new_book=Body()):
+#     BOOKS.append(new_book)
+#
+# @app.put("/books/update_book")
+# async def update_book(updated_book=Body()):
+#     for i in range(len(BOOKS)):
+#         if BOOKS[i].get('title').casefold() == updated_book.get('title').casefold():
+#             BOOKS[i] = updated_book
+#
+#
+# @app.delete("/books/delete_book/{book_title}")
+# async def delete_book(book_title: str):
+#     for i in range(len(BOOKS)):
+#         if BOOKS[i].get('title').casefold() == book_title.casefold():
+#             BOOKS.pop(i)
+#             break
+
+# @app.get("/books/{author_name}")
+# async def get_books_by_author(author_name: str):
+#     books = []
+#
+#     for book in BOOKS:
+#         if book.get('author').casefold() == author_name.casefold():
+#             books.append(book)
+#
+#     return books
 
 
 @app.get("/books/")
-async def get_searched_book(s: str, limit: int):
-    searched_books = []
-    book_counter = 0
+async def get_books_by_author(author_name: str):
+    books = []
 
     for book in BOOKS:
-        if s.casefold() in book.get('title').casefold():
-            searched_books.append(book)
-            book_counter += 1
+        if book.get('author').casefold() == author_name.casefold():
+            books.append(book)
 
-            if book_counter == limit:
-                break
-
-    return searched_books
-
-@app.post("/books/create_book")
-async def create_book(new_book=Body()):
-    BOOKS.append(new_book)
-
-@app.put("/books/update_book")
-async def update_book(updated_book=Body()):
-    for i in range(len(BOOKS)):
-        if BOOKS[i].get('title').casefold() == updated_book.get('title').casefold():
-            BOOKS[i] = updated_book
+    return books
