@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 
 app = FastAPI()
 
@@ -24,9 +24,9 @@ BOOKS = [
 ]
 
 
-# @app.get("/books")
-# async def read_all_books():
-#     return BOOKS
+@app.get("/books")
+async def read_all_books():
+    return BOOKS
 
 
 # @app.get("/books/{id}")
@@ -83,3 +83,13 @@ async def get_searched_book(s: str, limit: int):
                 break
 
     return searched_books
+
+@app.post("/books/create_book")
+async def create_book(new_book=Body()):
+    BOOKS.append(new_book)
+
+@app.put("/books/update_book")
+async def update_book(updated_book=Body()):
+    for i in range(len(BOOKS)):
+        if BOOKS[i].get('title').casefold() == updated_book.get('title').casefold():
+            BOOKS[i] = updated_book
