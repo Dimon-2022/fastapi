@@ -1,4 +1,7 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI
+from pydantic import BaseModel, Field
+from typing import Optional
+
 
 app = FastAPI()
 
@@ -18,6 +21,25 @@ class Book:
         self.rating = rating
 
 
+class BookRequest(BaseModel):
+    id: Optional[int] = Field(description='ID is not needed on create', default=None)
+    title: str = Field(min_length=3, )
+    author: str = Field(min_length=1)
+    description: str = Field(min_length=1, max_length=100)
+    rating: int = Field(gt=0, lt=6)
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "title": "A new book",
+                "author": "dima",
+                "description": "A new description of a book",
+                "rating": 5
+            }
+        }
+    }
+
+
 BOOKS = [
     Book(1, 'Computer Science', 'dima', 'Very nice book', 5),
     Book(2, 'Be Fast with FastAPI', 'dima', 'Great book', 5),
@@ -33,8 +55,26 @@ async def read_all_books():
     return BOOKS
 
 
+
+
 @app.post("/create-book")
 async def create_book(book_request: BookRequest):
-    new_book = Book(**book_request.dict())
+    new_book = Book(**book_request.model_dump())
 
-    BOOKS.append(new_book)
+    BOOKS.append(find_book_id(new_book))
+
+
+def find_book_id(book:Book):
+    if len(BOOKS) > 0:
+        book.id = BOOKS[-1].id + 1
+    else:
+        book.id = 1
+
+    return book
+
+
+@app.get("/books/{id}")
+async def get_single_book(id:int):
+    for book in BOOKS:
+        if book.id == id:
+            return book
