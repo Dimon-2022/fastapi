@@ -1,3 +1,5 @@
+from datetime import date
+
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -12,13 +14,15 @@ class Book:
     author: str
     description: str
     rating: int
+    published_date: int
 
-    def __init__(self, id, title, author, description, rating):
+    def __init__(self, id, title, author, description, rating, published_date=1999):
         self.id = id
         self.title = title
         self.author = author
         self.description = description
         self.rating = rating
+        self.published_date = published_date
 
 
 class BookRequest(BaseModel):
@@ -27,6 +31,7 @@ class BookRequest(BaseModel):
     author: str = Field(min_length=1)
     description: str = Field(min_length=1, max_length=100)
     rating: int = Field(gt=0, lt=6)
+    published_date: int = Field(gt=1900, lt=2100)
 
     model_config = {
         "json_schema_extra": {
@@ -34,19 +39,20 @@ class BookRequest(BaseModel):
                 "title": "A new book",
                 "author": "dima",
                 "description": "A new description of a book",
-                "rating": 5
+                "rating": 5,
+                "published_date": 1999
             }
         }
     }
 
 
 BOOKS = [
-    Book(1, 'Computer Science', 'dima', 'Very nice book', 5),
-    Book(2, 'Be Fast with FastAPI', 'dima', 'Great book', 5),
-    Book(3, 'Master Endpoints', 'dima', 'Very interesting book', 5),
-    Book(4, 'HP1', 'Author 1', 'Book Description 1', 1),
-    Book(5, 'HP2', 'Author 2', 'Book Description 2', 2),
-    Book(6, 'HP3', 'Author 3', 'Book Description 3', 3)
+    Book(1, 'Computer Science', 'dima', 'Very nice book', 5, 1999),
+    Book(2, 'Be Fast with FastAPI', 'dima', 'Great book', 5, 1999),
+    Book(3, 'Master Endpoints', 'dima', 'Very interesting book', 5, 2001),
+    Book(4, 'HP1', 'Author 1', 'Book Description 1', 1, 2016),
+    Book(5, 'HP2', 'Author 2', 'Book Description 2', 2, 2018),
+    Book(6, 'HP3', 'Author 3', 'Book Description 3', 3, 2023)
 ]
 
 
@@ -101,6 +107,17 @@ async def get_books_by_rating(rating: int):
     books = []
     for book in BOOKS:
         if book.rating == rating:
+            books.append(book)
+
+    return books
+
+
+
+@app.get("/books/published-date/{published_date}")
+async def get_books_by_published_date(published_date: int):
+    books = []
+    for book in BOOKS:
+        if book.published_date == published_date:
             books.append(book)
 
     return books
