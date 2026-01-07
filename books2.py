@@ -113,7 +113,7 @@ async def get_books_by_rating(rating: int):
 
 
 
-@app.get("/books/published-date/{published_date}")
+@app.get("/books/publish/")
 async def get_books_by_published_date(published_date: int):
     books = []
     for book in BOOKS:
