@@ -78,3 +78,13 @@ async def get_single_book(id:int):
     for book in BOOKS:
         if book.id == id:
             return book
+
+
+@app.get("/books/rating/{rating}")
+async def get_books_by_rating(rating: int):
+    books = []
+    for book in BOOKS:
+        if book.rating == rating:
+            books.append(book)
+
+    return books
