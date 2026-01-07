@@ -54,7 +54,13 @@ BOOKS = [
 async def read_all_books():
     return BOOKS
 
-
+@app.put("/books/update_book")
+async def update_book(book_request: BookRequest):
+    for i in range(len(BOOKS)):
+        if BOOKS[i].id == book_request.id:
+            book = Book(**book_request.model_dump())
+            BOOKS[i] = book
+            return BOOKS[i]
 
 
 @app.post("/create-book")
