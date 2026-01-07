@@ -1,6 +1,6 @@
 from datetime import date
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Path
 from pydantic import BaseModel, Field
 from typing import Optional
 
@@ -69,7 +69,7 @@ async def update_book(book_request: BookRequest):
             return BOOKS[i]
 
 @app.delete("/books/{id}")
-async def delete_book(id: int):
+async def delete_book(id: int = Path(gt=0)):
     for i in range(len(BOOKS)):
         if BOOKS[i].id == id:
             BOOKS.pop(i)
@@ -96,7 +96,7 @@ def find_book_id(book:Book):
 
 
 @app.get("/books/{id}")
-async def get_single_book(id:int):
+async def get_single_book(id: int = Path(gt=0)):
     for book in BOOKS:
         if book.id == id:
             return book
