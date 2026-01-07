@@ -62,6 +62,16 @@ async def update_book(book_request: BookRequest):
             BOOKS[i] = book
             return BOOKS[i]
 
+@app.delete("/books/{id}")
+async def delete_book(id: int):
+    for i in range(len(BOOKS)):
+        if BOOKS[i].id == id:
+            BOOKS.pop(i)
+            break
+
+
+
+
 
 @app.post("/create-book")
 async def create_book(book_request: BookRequest):
