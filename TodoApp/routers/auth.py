@@ -70,6 +70,8 @@ def render_register_page(request: Request):
 
 def authenticate_user(username: str, password: str, db):
     user = db.query(Users).filter(Users.username == username).first()
+    #print("DEBUG username:", repr(user))
+
     if not user:
         return False
     if not bcrypt_context.verify(password, user.hashed_password):
@@ -93,7 +95,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         if username is None or user_id is None:
             return {'username': username, 'id': user_id, 'user_role': user_role}
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORISED, detail="Could not validate user")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="!!!Could not validate user")
 
 
 
@@ -120,7 +122,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
                                  db: db_dependency):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORISED, detail="Could not validate user")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user")
     token = create_access_token(user.username, user.id, user.role, timedelta(minutes=20) )
     return {'access_token': token, 'token_type': 'bearer'}
 
